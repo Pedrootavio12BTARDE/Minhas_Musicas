@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Minhas Músicas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="glass-panel">
+            <div class="header">
+                <h1>Minhas Músicas</h1>
+                <a href="cadastrar.html" class="link-btn">Cadastrar música</a>
+            </div>
+            <div id="lista-musicas">
+                <!-- As músicas vão aparecer aqui -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/musicas'; // Mude para URL da Vercel no deploy
+
+        async function carregarMusicas() {
+            const response = await fetch(API_URL);
+            const musicas = await response.json();
+            const container = document.getElementById('lista-musicas');
+            container.innerHTML = '';
+
+            musicas.forEach(musica => {
+                container.innerHTML += `
+                    <div class="music-card">
+                        <h2 class="music-title">${musica.titulo}</h2>
+                        <p class="music-artist">${musica.artista}</p>
+                        <p class="music-meta">${musica.genero} | ${musica.ano} | ${musica.duracao} min</p>
+                        <a href="editar.html?id=${musica.id}" class="btn">Editar</a>
+                        <button onclick="apagarMusica(${musica.id})" class="btn" style="margin-left: 10px;">Apagar</button>
+                    </div>
+                `;
+            });
+        }
+
+        async function apagarMusica(id) {
+            if (confirm('Tem certeza que deseja apagar esta música?')) {
+                await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                carregarMusicas();
+            }
+        }
+
+        carregarMusicas();
+    </script>
+</body>
+</html>

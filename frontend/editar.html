@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Música</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="glass-panel">
+            <div class="header">
+                <h1>Editar música</h1>
+                <a href="index.html" class="link-btn">Voltar para a lista</a>
+            </div>
+            <form id="form-editar">
+                <div class="form-group"><label>Título</label><input type="text" id="titulo" required></div>
+                <div class="form-group"><label>Artista</label><input type="text" id="artista" required></div>
+                <div class="form-group"><label>Gênero</label><input type="text" id="genero" required></div>
+                <div class="form-group"><label>Ano</label><input type="number" id="ano" required></div>
+                <div class="form-group"><label>Duração (minutos)</label><input type="number" id="duracao" required></div>
+                <button type="submit" class="btn solid">Salvar alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/musicas';
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        async function carregarDados() {
+            const response = await fetch(`${API_URL}/${id}`);
+            const musica = await response.json();
+            
+            document.getElementById('titulo').value = musica.titulo;
+            document.getElementById('artista').value = musica.artista;
+            document.getElementById('genero').value = musica.genero;
+            document.getElementById('ano').value = musica.ano;
+            document.getElementById('duracao').value = musica.duracao;
+        }
+
+        document.getElementById('form-editar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const dados = {
+                titulo: document.getElementById('titulo').value,
+                artista: document.getElementById('artista').value,
+                genero: document.getElementById('genero').value,
+                ano: document.getElementById('ano').value,
+                duracao: document.getElementById('duracao').value
+            };
+
+            await fetch(`${API_URL}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+
+            window.location.href = 'index.html';
+        });
+
+        carregarDados();
+    </script>
+</body>
+</html>
